@@ -4,16 +4,18 @@ import numpy as np
 from stress_analysis import stress_analysis
 
 
-def compute(N, E, a, b, angle):
+def compute(N, x_c, y_c, a, b, angle):
 
-    Fxy, dof, s_Von_Mises = stress_analysis(N, E, angle, a, b)
-    x = np.reshape(Fxy, [-1, 1])
+    params = np.reshape(np.array([x_c, y_c, a, b, angle]), [5, 1])
 
-    return x
+    S_22 = stress_analysis(N, x_c, y_c, a, b, angle)
+    x = np.reshape(S_22, [-1, 1])
+
+    return x, params
 
 
 Params = np.load('Params.npy')
-pivot_cols = np.array([24449, 17, 24439, 99, 368, 22967, 23609, 654, 152, 23622, 200, 24202, 23211, 24297, 22665, 24123, 23948, 23578, 24025, 24398])
+pivot_cols = np.load('pivot_cols.npy')
 Params_HF = Params[:, pivot_cols]
 
 N = 60
@@ -21,12 +23,13 @@ X_HF = np.array([])
 
 for i in range(len(pivot_cols)):
 
-    E = Params_HF[0, i]
-    a = Params_HF[1, i]
-    b = Params_HF[2, i]
-    angle = Params_HF[3, i]
+    x_c = Params_HF[0, i]
+    y_c = Params_HF[1, i]
+    a = Params_HF[2, i]
+    b = Params_HF[3, i]
+    angle = Params_HF[4, i]
 
-    x_hf = compute(N, E, a, b, angle)
+    x_hf = compute(N, x_c, y_c, a, b, angle)
 
     if len(X_HF) == 0:
         X_HF = x_hf
