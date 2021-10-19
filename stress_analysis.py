@@ -19,7 +19,10 @@ def stress_analysis(N, Er, angle, a, b):
     '''
 
     # Obtaining clockwise rotated elliptic hole
-
+    
+    x_ellipse = 5
+    y_ellipse = 7
+    
     # Angle of rotation degree to radian
     theta = -(np.pi / 180) * angle  # in radians
 
@@ -43,7 +46,7 @@ def stress_analysis(N, Er, angle, a, b):
     domain1 = Polygon([Point(p1), Point(p2), Point(p3), Point(p4)])
     domain = domain1
 
-    domain.set_subdomain(2, Ellipse(Point(5, 5), a, b))
+    domain.set_subdomain(2, Ellipse(Point(x_ellipse, y_ellipse), a, b))
 
     mesh = generate_mesh(domain, N)
 
@@ -56,8 +59,8 @@ def stress_analysis(N, Er, angle, a, b):
     class Inclusion(SubDomain):
         def inside(self, x, on_boundary):
             tol = 1e-4
-            xo = x[0] - 5
-            yo = x[1] - 5
+            xo = x[0] - x_ellipse
+            yo = x[1] - y_ellipse
             c = np.cos(theta)
             s = np.sin(theta)
             X = xo * c - yo * s
@@ -70,6 +73,10 @@ def stress_analysis(N, Er, angle, a, b):
     facettag = MeshFunction("size_t", mesh, mesh.topology().dim() - 1)
     facettag.set_all(0)
 
+    # fig = plt.figure(figsize=(3,3),dpi=200)
+    # pic = plot(mesh,linewidth=0.1)
+    # plt.savefig('mesh_N={}'.format(N))
+    
     # defining fixed boundary
     class Fixed(SubDomain):
         def inside(self, x, on_boundary):
@@ -188,5 +195,13 @@ def stress_analysis(N, Er, angle, a, b):
             x_j = 10 / numdiv * j
             y_i = 10 - 10 / numdiv * i
             Fxy[i, j] = s_Von_Mises(Point(x_j, y_i))
+            
+    S_22 = np.zeros((numdiv + 1, numdiv + 1))
 
-    return Fxy, dof, s_Von_Mises
+    for i in range(S_22.shape[0]):
+        for j in range(S_22.shape[1]):
+            x_j = 10 / numdiv * j
+            y_i = 10 - 10 / numdiv * i
+            S_22[i, j] = sigma_22(Point(x_j, y_i))
+
+    return S_22
