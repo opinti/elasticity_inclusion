@@ -184,7 +184,7 @@ def stress_analysis(N, x_c, y_c, a, b, angle, Er=4.):
     s_Von_Mises = project(s_Von_Mises, Vh1)
     s_Von_Mises.set_allow_extrapolation(True)
 
-    numdiv = 99
+    numdiv = 49
     S_22 = np.zeros((numdiv + 1, numdiv + 1))
     for i in range(S_22.shape[0]):
         for j in range(S_22.shape[1]):
