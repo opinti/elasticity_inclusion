@@ -4,24 +4,21 @@ from mshr import *
 import dolfin as df
 
 
-def stress_analysis(N, Er, angle, a, b):
+def stress_analysis(N, x_c, y_c, a, b, angle, Er=4.):
 
     '''
-    Function 'stress_analysis' computes the Von Mises stress for the given input parameters
+    Function 'stress_analysis' computes the stress tensor for the given input parameters
 
     :param N: mesh refinement parameter
-    :param Er: ratio of Young's modulus of inclusion to that of the substrate
+    :param: x_c, y_c center of the inclusion
     :param angle: angle of tilt of the inclusion from x-axis (ccw) in degrees
     :param a, b: semi-minor and major axis of ellipse
+    :param Er: ratio of Young's modulus of inclusion to that of the substrate
 
-    :return Fxy: 2D output (Von Mises stress) array where the index [0,0] refers to the xy-coordinate (0,10)
-    :return dof: number of degrees of freedom in the system to be solved
+    :return S_22: 2D output array of vertical traction field where the index [0,0] refers to the xy-coordinate (0,10)
     '''
 
     # Obtaining clockwise rotated elliptic hole
-    
-    x_ellipse = 5
-    y_ellipse = 7
     
     # Angle of rotation degree to radian
     theta = -(np.pi / 180) * angle  # in radians
@@ -30,13 +27,13 @@ def stress_analysis(N, Er, angle, a, b):
     R = np.array([[np.cos(theta), -np.sin(theta)],
                   [np.sin(theta), np.cos(theta)]])
 
-    # Vertices of in c.c.w direction
+    # Vertices rotation in c.c.w direction
+    c = np.array([x_c, y_c])
     p1 = np.array([0, 0])
     p2 = np.array([10, 0])
     p3 = np.array([10, 10])
     p4 = np.array([0, 10])
-    c = (p1 + p2 + p3 + p4) / 4
-
+    
     # Rotating the coordinates
     p1 = np.matmul(R, p1 - c) + c
     p2 = np.matmul(R, p2 - c) + c
@@ -46,7 +43,7 @@ def stress_analysis(N, Er, angle, a, b):
     domain1 = Polygon([Point(p1), Point(p2), Point(p3), Point(p4)])
     domain = domain1
 
-    domain.set_subdomain(2, Ellipse(Point(x_ellipse, y_ellipse), a, b))
+    domain.set_subdomain(2, Ellipse(Point(c), a, b))
 
     mesh = generate_mesh(domain, N)
 
@@ -59,8 +56,8 @@ def stress_analysis(N, Er, angle, a, b):
     class Inclusion(SubDomain):
         def inside(self, x, on_boundary):
             tol = 1e-4
-            xo = x[0] - x_ellipse
-            yo = x[1] - y_ellipse
+            xo = x[0] - x_c
+            yo = x[1] - y_c
             c = np.cos(theta)
             s = np.sin(theta)
             X = xo * c - yo * s
@@ -187,17 +184,8 @@ def stress_analysis(N, Er, angle, a, b):
     s_Von_Mises = project(s_Von_Mises, Vh1)
     s_Von_Mises.set_allow_extrapolation(True)
 
-    numdiv = 99  # int(np.floor(np.sqrt(dof)))
-    Fxy = np.zeros((numdiv + 1, numdiv + 1))
-
-    for i in range(Fxy.shape[0]):
-        for j in range(Fxy.shape[1]):
-            x_j = 10 / numdiv * j
-            y_i = 10 - 10 / numdiv * i
-            Fxy[i, j] = s_Von_Mises(Point(x_j, y_i))
-            
+    numdiv = 99
     S_22 = np.zeros((numdiv + 1, numdiv + 1))
-
     for i in range(S_22.shape[0]):
         for j in range(S_22.shape[1]):
             x_j = 10 / numdiv * j
