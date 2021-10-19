@@ -13,10 +13,10 @@ def compute(N, x_c, y_c, a, b, angle):
     return x_lf, params
 
 N = 15
-X_c = np.array([7])
-Y_c = np.array([7])
-A = np.linspace(1, 2, 10)
-B = np.linspace(1, 2, 10)
+X_c = np.linspace(2, 8, 7)
+Y_c = np.linspace(2, 8, 7)
+A = np.linspace(1, 2, 5)
+B = np.linspace(1, 2, 5)
 angles = np.linspace(0, 180, 18)
 
 X_LF = np.array([])
