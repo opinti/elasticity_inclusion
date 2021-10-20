@@ -6,12 +6,10 @@ from stress_analysis import stress_analysis
 
 def compute(N, x_c, y_c, a, b, angle):
 
-    params = np.reshape(np.array([x_c, y_c, a, b, angle]), [5, 1])
-
     S_22 = stress_analysis(N, x_c, y_c, a, b, angle)
     x = np.reshape(S_22, [-1, 1])
 
-    return x, params
+    return x
 
 
 Params = np.load('Params.npy')
