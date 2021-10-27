@@ -12,9 +12,9 @@ def compute(N, x_c, y_c, a, b, angle):
 
     return x_lf, params
 
-N = 15
-X_c = np.linspace(2, 8, 7)
-Y_c = np.linspace(2, 8, 7)
+N = 8
+X_c = np.linspace(2.5, 7.5, 6)
+Y_c = np.linspace(5, 7.5, 6)
 A = np.linspace(1, 2, 5)
 B = np.linspace(1, 2, 5)
 angles = np.linspace(0, 180, 18)
