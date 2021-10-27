@@ -40,9 +40,7 @@ def stress_analysis(N, x_c, y_c, a, b, angle, Er=4.):
     p3 = np.matmul(R, p3 - c) + c
     p4 = np.matmul(R, p4 - c) + c
 
-    domain1 = Polygon([Point(p1), Point(p2), Point(p3), Point(p4)])
-    domain = domain1
-
+    domain = Polygon([Point(p1), Point(p2), Point(p3), Point(p4)])
     domain.set_subdomain(2, Ellipse(Point(c), a, b))
 
     mesh = generate_mesh(domain, N)
@@ -107,15 +105,13 @@ def stress_analysis(N, x_c, y_c, a, b, angle, Er=4.):
     mu = E / (2 * (1 + nu))
     lamda_i = E * nu_i / ((1 - 2 * nu_i) * (1 + nu_i))
     mu_i = E_i / (2 * (1 + nu_i))
-
-    # Define forcing function
+	
+	# Define forcing function
     fu = Expression(("0.0", "0.0"), element=V2.ufl_element())
-    du = Expression(("0.0", "1e-5"), element=V2.ufl_element())
 
     # Define boundary condition
-    constraint = Expression((("0.0", "0.0")), element=V2.ufl_element())
-    bc1 = DirichletBC(V2, constraint, facettag, 1)
-    bc2 = DirichletBC(V2, du, facettag, 2)
+    bc1 = DirichletBC(V2, Constant((0, 0)), facettag, 1)
+    bc2 = DirichletBC(V2.sub(1), Constant(1e-5), facettag, 2)
     bc = [bc1, bc2]
 
     # Define variational problem
@@ -133,7 +129,7 @@ def stress_analysis(N, x_c, y_c, a, b, angle, Er=4.):
     # Write equation in weak form
     # integrate(grad(w):sigma)dx = integrate(w.fu)*dx
     a = inner(grad(w), sigma) * dx(0) + inner(grad(w), sigma_i) * dx(1)
-    L = dot(w, fu) * dx  # *ds(2)
+    L = dot(w, fu) * dx  
 
     # Compute solution
     u = Function(V2)
