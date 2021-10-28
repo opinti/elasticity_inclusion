@@ -180,12 +180,18 @@ def stress_analysis(N, x_c, y_c, a, b, angle, Er=4.):
     s_Von_Mises = project(s_Von_Mises, Vh1)
     s_Von_Mises.set_allow_extrapolation(True)
 
-    numdiv = 49
-    S_22 = np.zeros((numdiv + 1, numdiv + 1))
-    for i in range(S_22.shape[0]):
-        for j in range(S_22.shape[1]):
-            x_j = 10 / numdiv * j
-            y_i = 10 - 10 / numdiv * i
-            S_22[i, j] = sigma_22(Point(x_j, y_i))
+    # numdiv = 49
+    # S_22 = np.zeros((numdiv + 1, numdiv + 1))
+    # for i in range(S_22.shape[0]):
+        # for j in range(S_22.shape[1]):
+            # x_j = 10 / numdiv * j
+            # y_i = 10 - 10 / numdiv * i
+            # S_22[i, j] = sigma_22(Point(x_j, y_i))
+			
+    numdiv = 100
+    s_22 = np.zeros((numdiv, 1))
+    for j in range(numdiv):
+        x_j = 10 / numdiv * j
+        s_22[j, 0] = sigma_22(Point(x_j, 10))
 
-    return S_22
+    return s_22

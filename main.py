@@ -4,12 +4,9 @@ import numpy as np
 from stress_analysis import stress_analysis
 
 def compute(N, x_c, y_c, a, b, angle):
-
     params = np.reshape(np.array([x_c, y_c, a, b, angle]), [5, 1])
-
-    S_22 = stress_analysis(N, x_c, y_c, a, b, angle)
-    x_lf = np.reshape(S_22, [-1, 1])
-
+    x_lf = stress_analysis(N, x_c, y_c, a, b, angle)
+    # x_lf = np.reshape(S_22, [-1, 1])
     return x_lf, params
 
 N = 8

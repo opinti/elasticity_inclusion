@@ -5,12 +5,9 @@ from stress_analysis import stress_analysis
 
 
 def compute(N, x_c, y_c, a, b, angle):
-
-    S_22 = stress_analysis(N, x_c, y_c, a, b, angle)
-    x = np.reshape(S_22, [-1, 1])
-
+    x = stress_analysis(N, x_c, y_c, a, b, angle)
+    # x = np.reshape(S_22, [-1, 1])
     return x
-
 
 Params = np.load('Params.npy')
 pivot_cols = np.load('pivot_cols.npy')
